@@ -30,7 +30,19 @@ func (this Date) Day() byte {
 	return byte((this & dayMask) >> 11)
 }
 
-// String returns string in the default PostgreSQL date format, YYYY-MM-DD.
+func (this Date) YearInt() int {
+	return int(this&yearMask) + 2000
+}
+
+func (this Date) MonthMonth() time.Month {
+	return time.Month((this & monthMask) >> 7)
+}
+
+func (this Date) DayInt() int {
+	return int((this & dayMask) >> 11)
+}
+
+// String returns date as string in the default PostgreSQL date format, YYYY-MM-DD.
 func (this Date) String() string {
 	return assets.Uint162String(this.Year()) + "-" + assets.Byte2String(this.Month()) + "-" + assets.Byte2String(this.Day())
 }
@@ -40,8 +52,56 @@ func (this Date) Format(layout string) string {
 	case PostgreSQLFormat:
 		return assets.Uint162String(this.Year()) + "-" + assets.Byte2String(this.Month()) + "-" + assets.Byte2String(this.Day())
 	default:
-		return time.Date(int(this.Year()), time.Month(this.Month()), int(this.Day()), 0, 0, 0, 0, time.UTC).Format(layout)
+		return makeTime(this.Year(), this.Month(), this.Day()).Format(layout)
 	}
+}
+
+func (this Date) NextDay() Date {
+	if this.Day() > 27 {
+		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 0, 1)
+		return NewDateFromTime(&timeDate)
+	}
+	return this&^dayMask | (this>>11+1)<<11
+}
+
+func (this Date) PreviousDay() Date {
+	if this.Day() == 1 {
+		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 0, -1)
+		return NewDateFromTime(&timeDate)
+	}
+	return this&^dayMask | (this>>11-1)<<11
+}
+
+func (this Date) NextWeek() Date {
+	if this.Day() > 21 {
+		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 0, 7)
+		return NewDateFromTime(&timeDate)
+	}
+	return this&^dayMask | (this>>11+7)<<11
+}
+
+func (this Date) PreviousWeek() Date {
+	if this.Day() < 8 {
+		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 0, -7)
+		return NewDateFromTime(&timeDate)
+	}
+	return this&^dayMask | (this>>11-7)<<11
+}
+
+func (this Date) NextMonth() Date {
+	if this>>11 > 28 || this&^dayMask>>7 == 12 {
+		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 1, 0)
+		return NewDateFromTime(&timeDate)
+	}
+	return this&^monthMask | (this&^dayMask>>7+1)<<7
+}
+
+func (this Date) PreviousMonth() Date {
+	if this>>11 > 28 || this&^dayMask>>7 == 1 {
+		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, -1, 0)
+		return NewDateFromTime(&timeDate)
+	}
+	return this&^monthMask | (this&^dayMask>>7-1)<<7
 }
 
 func NewDate(year uint16, month, day byte) Date {
@@ -51,7 +111,16 @@ func NewDate(year uint16, month, day byte) Date {
 	if year > 2127 {
 		return maximumDate
 	}
+	if day > 28 || month > 12 || day == 0 || month == 0 {
+		yearInt, monthMonth, dayInt := makeTime(year, month, day).Date()
+		year, month, day = uint16(yearInt), byte(monthMonth), byte(dayInt)
+	}
 	return Date(year-2000) + (Date(month) << 7) + (Date(day) << 11)
+}
+
+func makeTime(year uint16, month, day byte) *time.Time {
+	newTime := time.Date(int(year), time.Month(month), int(day), 0, 0, 0, 0, time.UTC)
+	return &newTime
 }
 
 func NewDateFromTime(t *time.Time) Date {
