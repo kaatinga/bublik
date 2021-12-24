@@ -15,6 +15,11 @@ const (
 	PostgreSQLFormat = "2006-01-02"
 )
 
+func Now() Date {
+	now := time.Now().UTC()
+	return NewDateFromTime(&now)
+}
+
 // Date represents a calendar date starting 2000 year and finishing the year 2127.
 type Date uint16
 
@@ -46,9 +51,18 @@ func (this Date) IsSet() bool {
 	return this != 0
 }
 
-func Now() Date {
-	now := time.Now().UTC()
-	return NewDateFromTime(&now)
+func (this Date) After(date Date) bool {
+	if this.Year() == date.Year() {
+		return this.Month() > date.Month()
+	}
+	return this.Year() > date.Year()
+}
+
+func (this Date) Before(date Date) bool {
+	if this.Year() == date.Year() {
+		return this.Month() < date.Month()
+	}
+	return this.Year() < date.Year()
 }
 
 // String returns date as string in the default PostgreSQL date format, YYYY-MM-DD.
