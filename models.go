@@ -42,6 +42,15 @@ func (this Date) DayInt() int {
 	return int((this & dayMask) >> 11)
 }
 
+func (this Date) IsSet() bool {
+	return this != 0
+}
+
+func Now() Date {
+	now := time.Now().UTC()
+	return NewDateFromTime(&now)
+}
+
 // String returns date as string in the default PostgreSQL date format, YYYY-MM-DD.
 func (this Date) String() string {
 	return assets.Uint162String(this.Year()) + "-" + assets.Byte2String(this.Month()) + "-" + assets.Byte2String(this.Day())
@@ -89,9 +98,16 @@ func (this Date) PreviousWeek() Date {
 }
 
 func (this Date) NextMonth() Date {
-	if this>>11 > 28 || this&^dayMask>>7 == 12 {
+	if this>>11 > 28 {
 		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 1, 0)
 		return NewDateFromTime(&timeDate)
+	}
+
+	if this&^dayMask>>7 == 12 {
+		if this&^monthMask&^dayMask == 127 { // we reached the maximum
+			return maximumDate
+		}
+		return this&^monthMask&^yearMask | (1 << 7) | this&^monthMask&^dayMask + 1 // January
 	}
 	return this&^monthMask | (this&^dayMask>>7+1)<<7
 }
