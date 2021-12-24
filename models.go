@@ -51,14 +51,14 @@ func (this Date) IsSet() bool {
 	return this != 0
 }
 
-func (this Date) After(date Date) bool {
+func (this Date) MonthAfter(date Date) bool {
 	if this.Year() == date.Year() {
 		return this.Month() > date.Month()
 	}
 	return this.Year() > date.Year()
 }
 
-func (this Date) Before(date Date) bool {
+func (this Date) MonthBefore(date Date) bool {
 	if this.Year() == date.Year() {
 		return this.Month() < date.Month()
 	}
