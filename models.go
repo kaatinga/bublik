@@ -1,7 +1,9 @@
 package bublyk
 
 import (
+	"fmt"
 	"github.com/kaatinga/assets"
+	"reflect"
 	"time"
 )
 
@@ -70,10 +72,72 @@ func (this Date) String() string {
 	return assets.Uint162String(this.Year()) + "-" + assets.Byte2String(this.Month()) + "-" + assets.Byte2String(this.Day())
 }
 
+// DMYWithDots returns date as string in the DD.MM.YYYY format.
+func (this Date) DMYWithDots() string {
+	return assets.Byte2String(this.Day()) + "." + assets.Byte2String(this.Month()) + "." + assets.Uint162String(this.Year())
+}
+
+func (this *Date) Set(src interface{}) error {
+	if src == nil {
+		*this = 0
+		return nil
+	}
+
+	switch value := src.(type) {
+	case time.Time:
+		*this = NewDateFromTime(&value)
+	case string:
+		t, err := time.ParseInLocation("2006-01-02", value, time.UTC)
+		if err != nil {
+			return err
+		}
+		*this = NewDateFromTime(&t)
+	case *time.Time:
+		if value == nil {
+			*this = 0
+		} else {
+			return this.Set(*value)
+		}
+	case *string:
+		if value == nil {
+			*this = 0
+		} else {
+			return this.Set(*value)
+		}
+	default:
+		if originalSrc, ok := underlyingTimeType(src); ok {
+			return this.Set(originalSrc)
+		}
+		return fmt.Errorf("cannot convert %v to Date", value)
+	}
+
+	return nil
+}
+
+func underlyingTimeType(val interface{}) (interface{}, bool) {
+	refVal := reflect.ValueOf(val)
+
+	switch refVal.Kind() {
+	case reflect.Ptr:
+		if refVal.IsNil() {
+			return nil, false
+		}
+		convVal := refVal.Elem().Interface()
+		return convVal, true
+	}
+
+	timeType := reflect.TypeOf(time.Time{})
+	if refVal.Type().ConvertibleTo(timeType) {
+		return refVal.Convert(timeType).Interface(), true
+	}
+
+	return nil, false
+}
+
 func (this Date) Format(layout string) string {
 	switch layout {
 	case PostgreSQLFormat:
-		return assets.Uint162String(this.Year()) + "-" + assets.Byte2String(this.Month()) + "-" + assets.Byte2String(this.Day())
+		return this.String()
 	default:
 		return makeTime(this.Year(), this.Month(), this.Day()).Format(layout)
 	}
