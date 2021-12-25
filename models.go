@@ -2,6 +2,7 @@ package bublyk
 
 import (
 	"fmt"
+	"github.com/jackc/pgtype"
 	"github.com/kaatinga/assets"
 	"reflect"
 	"time"
@@ -114,6 +115,24 @@ func (this *Date) Set(src interface{}) error {
 	return nil
 }
 
+func (this *Date) AssignTo(dst interface{}) error {
+	switch *this {
+	case 0:
+		return pgtype.NullAssignTo(dst)
+	default:
+		switch v := dst.(type) {
+		case *time.Time:
+			*v = *this.Time()
+			return nil
+		default:
+			if nextDst, retry := pgtype.GetAssignToDstType(dst); retry {
+				return this.AssignTo(nextDst)
+			}
+			return fmt.Errorf("unable to assign to %T", dst)
+		}
+	}
+}
+
 func underlyingTimeType(val interface{}) (interface{}, bool) {
 	refVal := reflect.ValueOf(val)
 
@@ -141,6 +160,10 @@ func (this Date) Format(layout string) string {
 	default:
 		return makeTime(this.Year(), this.Month(), this.Day()).Format(layout)
 	}
+}
+
+func (this Date) Time() *time.Time {
+	return makeTime(this.Year(), this.Month(), this.Day())
 }
 
 func (this Date) NextDay() Date {
