@@ -33,19 +33,3 @@ func BenchmarkShiftByBitwise(b *testing.B) {
 		NewDate(2021, 12, 25).NextDay()
 	}
 }
-
-func BenchmarkDate_NextMonth(b *testing.B) {
-	b.ReportAllocs()
-
-	for i := 0; i < b.N; i++ {
-		NewDate(2021, 11, 1).NextMonth()
-	}
-}
-
-func BenchmarkDate_NextMonthSimple(b *testing.B) {
-	b.ReportAllocs()
-
-	for i := 0; i < b.N; i++ {
-		NewDate(2021, 11, 1).NextMonthSimple()
-	}
-}

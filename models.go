@@ -84,6 +84,32 @@ func (this Date) Format(layout string) string {
 	}
 }
 
+func Parse(formattedDate string) (Date, error) {
+	if len([]rune(formattedDate)) != len([]rune(PostgreSQLFormat)) {
+		return 0, ErrUnrecognizedFormat
+	}
+
+	year, err := assets.String2Uint16(formattedDate[0:4])
+	if err != nil {
+		return 0, err
+	}
+
+	var month byte
+	month, err = assets.String2Byte(formattedDate[5:7])
+	if err != nil {
+		return 0, err
+	}
+
+	var day byte
+	day, err = assets.String2Byte(formattedDate[8:10])
+	if err != nil {
+		return 0, err
+	}
+
+	return NewDate(year, month, day), nil
+
+}
+
 func (this Date) Time() *time.Time {
 	return makeTime(this.Year(), this.Month(), this.Day())
 }

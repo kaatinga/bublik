@@ -145,3 +145,26 @@ func TestDate_PreviousMonth(t *testing.T) {
 		})
 	}
 }
+
+func TestParse(t *testing.T) {
+
+	tests := []struct {
+		formattedDate string
+		want          Date
+		wantErr       bool
+	}{
+		{"2021-12-01", NewDate(2021, 12, 1), false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.formattedDate, func(t *testing.T) {
+			got, err := Parse(tt.formattedDate)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Parse() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Parse() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
