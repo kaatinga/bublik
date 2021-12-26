@@ -6,11 +6,12 @@ import (
 )
 
 const (
-	yearMask  = 0b0000000001111111
-	monthMask = 0b0000011110000000
-	dayMask   = 0b1111100000000000
+	yearMask  = 0b1111111000000000
+	monthMask = 0b0000000111100000
+	dayMask   = 0b0000000000011111
 
-	maximumDate Date = 0b1111111001111111 // 2127-12-31
+	maximumDate Date = 0b1111111110011111 // 2127-12-31
+	minimumDate Date = 0b0000000000100001 // 2000-01-01
 
 	PostgreSQLFormat = "2006-01-02"
 )
@@ -24,31 +25,24 @@ func Now() Date {
 type Date uint16
 
 func (this Date) Year() uint16 {
-	return uint16(this&yearMask) + 2000
+	return uint16(this>>9) + 2000
 }
 
 func (this Date) Month() byte {
-	return byte((this & monthMask) >> 7)
+	return byte((this & monthMask) >> 5)
 }
 
 func (this Date) Day() byte {
-	return byte((this & dayMask) >> 11)
-}
-
-func (this Date) YearInt() int {
-	return int(this&yearMask) + 2000
-}
-
-func (this Date) MonthMonth() time.Month {
-	return time.Month((this & monthMask) >> 7)
-}
-
-func (this Date) DayInt() int {
-	return int((this & dayMask) >> 11)
+	return byte(this & dayMask)
 }
 
 func (this Date) IsSet() bool {
 	return this != 0
+}
+
+func (this Date) IsFuture() bool {
+	now := Now()
+	return this > now
 }
 
 func (this Date) MonthAfter(date Date) bool {
@@ -119,7 +113,7 @@ func (this Date) NextDay() Date {
 		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 0, 1)
 		return NewDateFromTime(&timeDate)
 	}
-	return this&^dayMask | (this>>11+1)<<11
+	return this&^dayMask | (this&dayMask + 1)
 }
 
 func (this Date) PreviousDay() Date {
@@ -127,7 +121,7 @@ func (this Date) PreviousDay() Date {
 		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 0, -1)
 		return NewDateFromTime(&timeDate)
 	}
-	return this&^dayMask | (this>>11-1)<<11
+	return this&^dayMask | (this&dayMask - 1)
 }
 
 func (this Date) NextWeek() Date {
@@ -135,7 +129,7 @@ func (this Date) NextWeek() Date {
 		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 0, 7)
 		return NewDateFromTime(&timeDate)
 	}
-	return this&^dayMask | (this>>11+7)<<11
+	return this&^dayMask | (this&dayMask + 7)
 }
 
 func (this Date) PreviousWeek() Date {
@@ -143,35 +137,35 @@ func (this Date) PreviousWeek() Date {
 		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 0, -7)
 		return NewDateFromTime(&timeDate)
 	}
-	return this&^dayMask | (this>>11-7)<<11
+	return this&^dayMask | (this&dayMask - 7)
 }
 
 func (this Date) NextMonth() Date {
-	if this>>11 > 28 {
+	if this&dayMask > 28 {
 		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 1, 0)
 		return NewDateFromTime(&timeDate)
 	}
 
-	if this&^dayMask>>7 == 12 {
-		if this&^monthMask&^dayMask == 127 { // we reached the maximum
+	if (this&monthMask)>>5 == 12 {
+		if this&yearMask == 127 { // we reached the maximum
 			return maximumDate
 		}
-		return this&^monthMask&^yearMask | (1 << 7) | this&^monthMask&^dayMask + 1 // January
+		return this&^monthMask&^yearMask | ((1 << 5) | (this&yearMask>>9+1)<<9) // January
 	}
-	return this&^monthMask | (this&^dayMask>>7+1)<<7
+	return this&^monthMask | ((((this & monthMask) >> 5) + 1) << 5)
 }
 
 func (this Date) PreviousMonth() Date {
-	if this>>11 > 28 || this&^dayMask>>7 == 1 {
+	if this.Day() > 28 || this.Month() == 1 {
 		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, -1, 0)
 		return NewDateFromTime(&timeDate)
 	}
-	return this&^monthMask | (this&^dayMask>>7-1)<<7
+	return composeDate(this.Year(), this.Month()-1, this.Day())
 }
 
 func NewDate(year uint16, month, day byte) Date {
 	if year < 2000 {
-		return 0
+		return minimumDate
 	}
 	if year > 2127 {
 		return maximumDate
@@ -180,7 +174,7 @@ func NewDate(year uint16, month, day byte) Date {
 		yearInt, monthMonth, dayInt := makeTime(year, month, day).Date()
 		year, month, day = uint16(yearInt), byte(monthMonth), byte(dayInt)
 	}
-	return Date(year-2000) + (Date(month) << 7) + (Date(day) << 11)
+	return composeDate(year, month, day)
 }
 
 func makeTime(year uint16, month, day byte) *time.Time {
@@ -191,10 +185,14 @@ func makeTime(year uint16, month, day byte) *time.Time {
 func NewDateFromTime(t *time.Time) Date {
 	year := t.Year()
 	if year < 2000 {
-		return 0
+		return minimumDate
 	}
 	if year > 2127 {
 		return maximumDate
 	}
-	return Date(year-2000) + (Date(t.Month()) << 7) + (Date(t.Day()) << 11)
+	return composeDate(uint16(year), byte(t.Month()), byte(t.Day()))
+}
+
+func composeDate(year uint16, month, day byte) Date {
+	return (Date(year-2000) << 9) + (Date(month) << 5) + Date(day)
 }
