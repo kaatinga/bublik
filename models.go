@@ -21,6 +21,11 @@ func Now() Date {
 	return NewDateFromTime(&now)
 }
 
+func CurrentMonth() Date {
+	now := Now()
+	return NewDate(now.Year(), now.Month(), 1)
+}
+
 // Date represents a calendar date starting 2000 year and finishing the year 2127.
 type Date uint16
 
@@ -101,7 +106,6 @@ func Parse(formattedDate string) (Date, error) {
 	}
 
 	return NewDate(year, month, day), nil
-
 }
 
 func (this Date) Time() *time.Time {
