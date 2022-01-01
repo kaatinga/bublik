@@ -66,12 +66,38 @@ func (this Date) MonthBefore(date Date) bool {
 
 // String returns date as string in the default PostgreSQL date format, YYYY-MM-DD.
 func (this Date) String() string {
-	return assets.Uint162String(this.Year()) + "-" + assets.Byte2String(this.Month()) + "-" + assets.Byte2String(this.Day())
+	var month = assets.Byte2String(this.Month())
+	var day = assets.Byte2String(this.Day())
+
+	// right format for month < 10
+	if len(month) == 1 {
+		month = "0" + month
+	}
+
+	// right format for day < 10
+	if len(day) == 1 {
+		day = "0" + day
+	}
+	return assets.Uint162String(this.Year()) + "-" + month + "-" + day
 }
 
 // DMYWithDots returns date as string in the DD.MM.YYYY format.
 func (this Date) DMYWithDots() string {
-	return assets.Byte2String(this.Day()) + "." + assets.Byte2String(this.Month()) + "." + assets.Uint162String(this.Year())
+
+	var month = assets.Byte2String(this.Month())
+	var day = assets.Byte2String(this.Day())
+
+	// right format for month < 10
+	if len(month) == 1 {
+		month = "0" + month
+	}
+
+	// right format for day < 10
+	if len(day) == 1 {
+		day = "0" + day
+	}
+
+	return day + "." + month + "." + assets.Uint162String(this.Year())
 }
 
 func (this Date) Format(layout string) string {
