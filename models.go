@@ -50,6 +50,7 @@ func (this Date) IsFuture() bool {
 	return this > now
 }
 
+// MonthAfter checks whether the date at least one month after the target date or not.
 func (this Date) MonthAfter(date Date) bool {
 	if this.Year() == date.Year() {
 		return this.Month() > date.Month()
@@ -57,6 +58,7 @@ func (this Date) MonthAfter(date Date) bool {
 	return this.Year() > date.Year()
 }
 
+// MonthBefore checks whether the date at least one month before the target date or not.
 func (this Date) MonthBefore(date Date) bool {
 	if this.Year() == date.Year() {
 		return this.Month() < date.Month()
@@ -186,11 +188,17 @@ func (this Date) NextMonth() Date {
 }
 
 func (this Date) PreviousMonth() Date {
-	if this.Day() > 28 || this.Month() == 1 {
+	if this.Day() > 28 {
 		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, -1, 0)
 		return NewDateFromTime(&timeDate)
 	}
-	return composeDate(this.Year(), this.Month()-1, this.Day())
+	if (this&monthMask)>>5 == 1 {
+		if this&yearMask == 0 { // we reached the minimum
+			return minimumDate
+		}
+		return this&^monthMask&^yearMask | ((12 << 5) | (this&yearMask>>9-1)<<9) // December
+	}
+	return this&^monthMask | ((((this & monthMask) >> 5) - 1) << 5)
 }
 
 func NewDate(year uint16, month, day byte) Date {
@@ -212,6 +220,7 @@ func makeTime(year uint16, month, day byte) *time.Time {
 	return &newTime
 }
 
+// NewDateFromTime create new date using time.Time model.
 func NewDateFromTime(t *time.Time) Date {
 	year := t.Year()
 	if year < 2000 {
