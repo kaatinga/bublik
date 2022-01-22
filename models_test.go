@@ -120,6 +120,7 @@ func TestDate_NextWeek(t *testing.T) {
 		{NewDate(2021, 12, 1), NewDate(2021, 12, 8)},
 		{NewDate(2021, 2, 28), NewDate(2021, 3, 7)},
 		{NewDate(2021, 2, 1), NewDate(2021, 2, 8)},
+		{NewDate(2127, 12, 31), maximumDate},
 	}
 	for _, tt := range tests {
 		t.Run(tt.this.String(), func(t *testing.T) {
@@ -140,6 +141,7 @@ func TestDate_PreviousWeek(t *testing.T) {
 		{NewDate(2021, 12, 1), NewDate(2021, 11, 24)},
 		{NewDate(2021, 3, 2), NewDate(2021, 2, 23)},
 		{NewDate(2021, 3, 9), NewDate(2021, 3, 2)},
+		{NewDate(2000, 1, 1), minimumDate},
 	}
 	for _, tt := range tests {
 		t.Run(tt.this.String(), func(t *testing.T) {
