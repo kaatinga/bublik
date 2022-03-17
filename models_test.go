@@ -159,6 +159,7 @@ func TestDate_NextMonth(t *testing.T) {
 	}{
 		{NewDate(2021, 12, 31), NewDate(2022, 1, 31)},
 		{NewDate(2024, 2, 29), NewDate(2024, 3, 29)},
+		{NewDate(2024, 1, 31), NewDate(2024, 3, 02)},
 		{NewDate(2021, 12, 1), NewDate(2022, 1, 1)},
 		{NewDate(2021, 3, 2), NewDate(2021, 4, 2)},
 		{NewDate(2023, 1, 1), NewDate(2023, 2, 1)},

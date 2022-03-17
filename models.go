@@ -172,6 +172,8 @@ func (this Date) PreviousWeek() Date {
 	return this&^dayMask | (this&dayMask - 7)
 }
 
+// NextMonth returns date which month number in incremented by one.
+// The month number may change greater if the source day does not exist in the next month.
 func (this Date) NextMonth() Date {
 	if this&dayMask > 28 {
 		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 1, 0)
@@ -179,7 +181,7 @@ func (this Date) NextMonth() Date {
 	}
 
 	if (this&monthMask)>>5 == 12 {
-		if this&yearMask == 127 { // we reached the maximum
+		if this&yearMask == 127 { // we reached the maximum year
 			return maximumDate
 		}
 		return this&^monthMask&^yearMask | ((1 << 5) | (this&yearMask>>9+1)<<9) // January
@@ -187,6 +189,8 @@ func (this Date) NextMonth() Date {
 	return this&^monthMask | ((((this & monthMask) >> 5) + 1) << 5)
 }
 
+// PreviousMonth returns date which month number in decremented by one.
+// The month number may change greater if the source day does not exist in the previous month.
 func (this Date) PreviousMonth() Date {
 	if this.Day() > 28 {
 		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, -1, 0)
