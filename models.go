@@ -1,7 +1,7 @@
 package bublyk
 
 import (
-	"github.com/kaatinga/assets"
+	"github.com/kaatinga/strconv"
 	"time"
 )
 
@@ -68,8 +68,8 @@ func (this Date) MonthBefore(date Date) bool {
 
 // String returns date as string in the default PostgreSQL date format, YYYY-MM-DD.
 func (this Date) String() string {
-	var month = assets.Byte2String(this.Month())
-	var day = assets.Byte2String(this.Day())
+	var month = faststrconv.Byte2String(this.Month())
+	var day = faststrconv.Byte2String(this.Day())
 
 	// right format for month < 10
 	if len(month) == 1 {
@@ -80,14 +80,14 @@ func (this Date) String() string {
 	if len(day) == 1 {
 		day = "0" + day
 	}
-	return assets.Uint162String(this.Year()) + "-" + month + "-" + day
+	return faststrconv.Uint162String(this.Year()) + "-" + month + "-" + day
 }
 
 // DMYWithDots returns date as string in the DD.MM.YYYY format.
 func (this Date) DMYWithDots() string {
 
-	var month = assets.Byte2String(this.Month())
-	var day = assets.Byte2String(this.Day())
+	var month = faststrconv.Byte2String(this.Month())
+	var day = faststrconv.Byte2String(this.Day())
 
 	// right format for month < 10
 	if len(month) == 1 {
@@ -99,7 +99,7 @@ func (this Date) DMYWithDots() string {
 		day = "0" + day
 	}
 
-	return day + "." + month + "." + assets.Uint162String(this.Year())
+	return day + "." + month + "." + faststrconv.Uint162String(this.Year())
 }
 
 func (this Date) Format(layout string) string {
@@ -116,19 +116,19 @@ func Parse(formattedDate string) (Date, error) {
 		return 0, ErrUnrecognizedFormat
 	}
 
-	year, err := assets.String2Uint16(formattedDate[0:4])
+	year, err := faststrconv.GetUint16(formattedDate[0:4])
 	if err != nil {
 		return 0, err
 	}
 
 	var month byte
-	month, err = assets.String2Byte(formattedDate[5:7])
+	month, err = faststrconv.GetByte(formattedDate[5:7])
 	if err != nil {
 		return 0, err
 	}
 
 	var day byte
-	day, err = assets.String2Byte(formattedDate[8:10])
+	day, err = faststrconv.GetByte(formattedDate[8:10])
 	if err != nil {
 		return 0, err
 	}

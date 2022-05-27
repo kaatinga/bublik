@@ -1,4 +1,4 @@
-github.com/kaatinga/assets v1.2.0 h1:vNKqw6xgUTv6wyigogIZ4MVTOTGP8+T7pfe3oNBWOIw=
-github.com/kaatinga/assets v1.2.0/go.mod h1:PCWy68NCavR/bBE38zIvQnoYimdNZiKojhUP2/bWP6M=
 github.com/kaatinga/const-errs v1.0.0 h1:SLGCWZcfqXeRowK75riH1uhUEmyxelZ9ZGaxK33Pa3M=
 github.com/kaatinga/const-errs v1.0.0/go.mod h1:v4aBzObpEAb/ha35dIgohIFD8KCRHmPt76v8xu2v2zs=
+github.com/kaatinga/strconv v1.0.3 h1:F0qP9rVdkIdrgqPBICfSR3/XkqMBcKF6Dau2fYA/8ms=
+github.com/kaatinga/strconv v1.0.3/go.mod h1:nGWHYzNneTBWTikd/bLFushHG7wF3C9Q0yYmDtII4fQ=
