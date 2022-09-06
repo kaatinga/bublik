@@ -1,5 +1,6 @@
 package bublyk
 
+//nolint: goimports // unknown problem
 import (
 	"github.com/kaatinga/strconv"
 	"time"
@@ -29,47 +30,47 @@ func CurrentMonth() Date {
 // Date represents a calendar date starting 2000 year and finishing the year 2127.
 type Date uint16
 
-func (this Date) Year() uint16 {
-	return uint16(this>>9) + 2000
+func (thisDate Date) Year() uint16 {
+	return uint16(thisDate>>9) + 2000
 }
 
-func (this Date) Month() byte {
-	return byte((this & monthMask) >> 5)
+func (thisDate Date) Month() byte {
+	return byte((thisDate & monthMask) >> 5)
 }
 
-func (this Date) Day() byte {
-	return byte(this & dayMask)
+func (thisDate Date) Day() byte {
+	return byte(thisDate & dayMask)
 }
 
-func (this Date) IsSet() bool {
-	return this != 0
+func (thisDate Date) IsSet() bool {
+	return thisDate != 0
 }
 
-func (this Date) IsFuture() bool {
+func (thisDate Date) IsFuture() bool {
 	now := Now()
-	return this > now
+	return thisDate > now
 }
 
 // MonthAfter checks whether the date at least one month after the target date or not.
-func (this Date) MonthAfter(date Date) bool {
-	if this.Year() == date.Year() {
-		return this.Month() > date.Month()
+func (thisDate Date) MonthAfter(date Date) bool {
+	if thisDate.Year() == date.Year() {
+		return thisDate.Month() > date.Month()
 	}
-	return this.Year() > date.Year()
+	return thisDate.Year() > date.Year()
 }
 
 // MonthBefore checks whether the date at least one month before the target date or not.
-func (this Date) MonthBefore(date Date) bool {
-	if this.Year() == date.Year() {
-		return this.Month() < date.Month()
+func (thisDate Date) MonthBefore(date Date) bool {
+	if thisDate.Year() == date.Year() {
+		return thisDate.Month() < date.Month()
 	}
-	return this.Year() < date.Year()
+	return thisDate.Year() < date.Year()
 }
 
 // String returns date as string in the default PostgreSQL date format, YYYY-MM-DD.
-func (this Date) String() string {
-	var month = faststrconv.Byte2String(this.Month())
-	var day = faststrconv.Byte2String(this.Day())
+func (thisDate Date) String() string {
+	var month = faststrconv.Byte2String(thisDate.Month())
+	var day = faststrconv.Byte2String(thisDate.Day())
 
 	// right format for month < 10
 	if len(month) == 1 {
@@ -80,13 +81,13 @@ func (this Date) String() string {
 	if len(day) == 1 {
 		day = "0" + day
 	}
-	return faststrconv.Uint162String(this.Year()) + "-" + month + "-" + day
+	return faststrconv.Uint162String(thisDate.Year()) + "-" + month + "-" + day
 }
 
 // DMYWithDots returns date as string in the DD.MM.YYYY format.
-func (this Date) DMYWithDots() string {
-	var month = faststrconv.Byte2String(this.Month())
-	var day = faststrconv.Byte2String(this.Day())
+func (thisDate Date) DMYWithDots() string {
+	var month = faststrconv.Byte2String(thisDate.Month())
+	var day = faststrconv.Byte2String(thisDate.Day())
 
 	// right format for month < 10
 	if len(month) == 1 {
@@ -98,15 +99,15 @@ func (this Date) DMYWithDots() string {
 		day = "0" + day
 	}
 
-	return day + "." + month + "." + faststrconv.Uint162String(this.Year())
+	return day + "." + month + "." + faststrconv.Uint162String(thisDate.Year())
 }
 
-func (this Date) Format(layout string) string {
+func (thisDate Date) Format(layout string) string {
 	switch layout {
 	case PostgreSQLFormat:
-		return this.String()
+		return thisDate.String()
 	default:
-		return makeTime(this.Year(), this.Month(), this.Day()).Format(layout)
+		return makeTime(thisDate.Year(), thisDate.Month(), thisDate.Day()).Format(layout)
 	}
 }
 
@@ -135,73 +136,73 @@ func Parse(formattedDate string) (Date, error) {
 	return NewDate(year, month, day), nil
 }
 
-func (this Date) Time() *time.Time {
-	return makeTime(this.Year(), this.Month(), this.Day())
+func (thisDate Date) Time() *time.Time {
+	return makeTime(thisDate.Year(), thisDate.Month(), thisDate.Day())
 }
 
-func (this Date) NextDay() Date {
-	if this.Day() > 27 {
-		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 0, 1)
+func (thisDate Date) NextDay() Date {
+	if thisDate.Day() > 27 {
+		timeDate := makeTime(thisDate.Year(), thisDate.Month(), thisDate.Day()).AddDate(0, 0, 1)
 		return NewDateFromTime(&timeDate)
 	}
-	return this&^dayMask | (this&dayMask + 1)
+	return thisDate&^dayMask | (thisDate&dayMask + 1)
 }
 
-func (this Date) PreviousDay() Date {
-	if this.Day() == 1 {
-		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 0, -1)
+func (thisDate Date) PreviousDay() Date {
+	if thisDate.Day() == 1 {
+		timeDate := makeTime(thisDate.Year(), thisDate.Month(), thisDate.Day()).AddDate(0, 0, -1)
 		return NewDateFromTime(&timeDate)
 	}
-	return this&^dayMask | (this&dayMask - 1)
+	return thisDate&^dayMask | (thisDate&dayMask - 1)
 }
 
-func (this Date) NextWeek() Date {
-	if this.Day() > 21 {
-		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 0, 7)
+func (thisDate Date) NextWeek() Date {
+	if thisDate.Day() > 21 {
+		timeDate := makeTime(thisDate.Year(), thisDate.Month(), thisDate.Day()).AddDate(0, 0, 7)
 		return NewDateFromTime(&timeDate)
 	}
-	return this&^dayMask | (this&dayMask + 7)
+	return thisDate&^dayMask | (thisDate&dayMask + 7)
 }
 
-func (this Date) PreviousWeek() Date {
-	if this.Day() < 8 {
-		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 0, -7)
+func (thisDate Date) PreviousWeek() Date {
+	if thisDate.Day() < 8 {
+		timeDate := makeTime(thisDate.Year(), thisDate.Month(), thisDate.Day()).AddDate(0, 0, -7)
 		return NewDateFromTime(&timeDate)
 	}
-	return this&^dayMask | (this&dayMask - 7)
+	return thisDate&^dayMask | (thisDate&dayMask - 7)
 }
 
 // NextMonth returns date which month number in incremented by one.
 // The month number may change greater if the source day does not exist in the next month.
-func (this Date) NextMonth() Date {
-	if this&dayMask > 28 {
-		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, 1, 0)
+func (thisDate Date) NextMonth() Date {
+	if thisDate&dayMask > 28 {
+		timeDate := makeTime(thisDate.Year(), thisDate.Month(), thisDate.Day()).AddDate(0, 1, 0)
 		return NewDateFromTime(&timeDate)
 	}
 
-	if (this&monthMask)>>5 == 12 {
-		if this&yearMask == 127 { // we reached the maximum year
+	if (thisDate&monthMask)>>5 == 12 {
+		if thisDate&yearMask == 127 { // we reached the maximum year
 			return maximumDate
 		}
-		return this&^monthMask&^yearMask | ((1 << 5) | (this&yearMask>>9+1)<<9) // January
+		return thisDate&^monthMask&^yearMask | ((1 << 5) | (thisDate&yearMask>>9+1)<<9) // January
 	}
-	return this&^monthMask | ((((this & monthMask) >> 5) + 1) << 5)
+	return thisDate&^monthMask | ((((thisDate & monthMask) >> 5) + 1) << 5)
 }
 
 // PreviousMonth returns date which month number in decremented by one.
 // The month number may change greater if the source day does not exist in the previous month.
-func (this Date) PreviousMonth() Date {
-	if this.Day() > 28 {
-		timeDate := makeTime(this.Year(), this.Month(), this.Day()).AddDate(0, -1, 0)
+func (thisDate Date) PreviousMonth() Date {
+	if thisDate.Day() > 28 {
+		timeDate := makeTime(thisDate.Year(), thisDate.Month(), thisDate.Day()).AddDate(0, -1, 0)
 		return NewDateFromTime(&timeDate)
 	}
-	if (this&monthMask)>>5 == 1 {
-		if this&yearMask == 0 { // we reached the minimum
+	if (thisDate&monthMask)>>5 == 1 {
+		if thisDate&yearMask == 0 { // we reached the minimum
 			return minimumDate
 		}
-		return this&^monthMask&^yearMask | ((12 << 5) | (this&yearMask>>9-1)<<9) // December
+		return thisDate&^monthMask&^yearMask | ((12 << 5) | (thisDate&yearMask>>9-1)<<9) // December
 	}
-	return this&^monthMask | ((((this & monthMask) >> 5) - 1) << 5)
+	return thisDate&^monthMask | ((((thisDate & monthMask) >> 5) - 1) << 5)
 }
 
 func NewDate(year uint16, month, day byte) Date {
