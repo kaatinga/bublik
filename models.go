@@ -85,7 +85,6 @@ func (this Date) String() string {
 
 // DMYWithDots returns date as string in the DD.MM.YYYY format.
 func (this Date) DMYWithDots() string {
-
 	var month = faststrconv.Byte2String(this.Month())
 	var day = faststrconv.Byte2String(this.Day())
 

@@ -54,7 +54,6 @@ func TestNewDate(t *testing.T) {
 			t.Log(date.String())
 		})
 	}
-
 }
 
 func TestDate_Format(t *testing.T) {
@@ -75,16 +74,17 @@ func TestDate_Format(t *testing.T) {
 	}
 }
 
+var nextAndPreviousDayTestCases = []struct {
+	this Date
+	want Date
+}{
+	{NewDate(2021, 12, 31), NewDate(2021, 12, 30)},
+	{NewDate(2021, 12, 2), NewDate(2021, 12, 1)},
+	{NewDate(2021, 3, 1), NewDate(2021, 2, 28)},
+}
+
 func TestDate_NextDay(t *testing.T) {
-	tests := []struct {
-		this Date
-		want Date
-	}{
-		{NewDate(2021, 12, 31), NewDate(2022, 1, 1)},
-		{NewDate(2021, 12, 1), NewDate(2021, 12, 2)},
-		{NewDate(2021, 2, 28), NewDate(2021, 3, 1)},
-	}
-	for _, tt := range tests {
+	for _, tt := range nextAndPreviousDayTestCases {
 		t.Run(tt.this.String(), func(t *testing.T) {
 			if got := tt.this.NextDay(); got != tt.want {
 				t.Errorf("NextDay() = %v, want %v", got, tt.want)
@@ -94,15 +94,7 @@ func TestDate_NextDay(t *testing.T) {
 }
 
 func TestDate_PreviousDay(t *testing.T) {
-	tests := []struct {
-		this Date
-		want Date
-	}{
-		{NewDate(2021, 12, 31), NewDate(2021, 12, 30)},
-		{NewDate(2021, 12, 2), NewDate(2021, 12, 1)},
-		{NewDate(2021, 3, 1), NewDate(2021, 2, 28)},
-	}
-	for _, tt := range tests {
+	for _, tt := range nextAndPreviousDayTestCases {
 		t.Run(tt.this.String(), func(t *testing.T) {
 			if got := tt.this.PreviousDay(); got != tt.want {
 				t.Errorf("NextDay() = %v, want %v", got, tt.want)
@@ -194,7 +186,6 @@ func TestDate_PreviousMonth(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-
 	tests := []struct {
 		formattedDate string
 		want          Date
