@@ -1,4 +1,4 @@
 github.com/kaatinga/const-errs v1.0.0 h1:SLGCWZcfqXeRowK75riH1uhUEmyxelZ9ZGaxK33Pa3M=
 github.com/kaatinga/const-errs v1.0.0/go.mod h1:v4aBzObpEAb/ha35dIgohIFD8KCRHmPt76v8xu2v2zs=
-github.com/kaatinga/strconv v1.2.0 h1:/uZAJW/uzGiTV+91pAUUa28kgC1f6CSeVDDB7ew4gt8=
-github.com/kaatinga/strconv v1.2.0/go.mod h1:nGWHYzNneTBWTikd/bLFushHG7wF3C9Q0yYmDtII4fQ=
+github.com/kaatinga/strconv v1.2.1 h1:4VmQLr+5EIPbbg2aEAFLIJQYwTeuRmWIuhk0+PRjqRI=
+github.com/kaatinga/strconv v1.2.1/go.mod h1:nGWHYzNneTBWTikd/bLFushHG7wF3C9Q0yYmDtII4fQ=
