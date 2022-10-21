@@ -47,8 +47,7 @@ func (thisDate Date) IsSet() bool {
 }
 
 func (thisDate Date) IsFuture() bool {
-	now := Now()
-	return thisDate > now
+	return thisDate > Now()
 }
 
 // MonthAfter checks whether the date at least one month after the target date or not.

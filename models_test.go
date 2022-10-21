@@ -220,7 +220,7 @@ func TestDate_IsFuture(t *testing.T) {
 		want bool
 	}{
 		{NewDate(2020, 12, 12), false},
-		{NewDate(2024, 12, 12), true},
+		{NewDate(2035, 12, 12), true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.date.String(), func(t *testing.T) {
