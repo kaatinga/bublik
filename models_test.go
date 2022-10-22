@@ -230,3 +230,20 @@ func TestDate_IsFuture(t *testing.T) {
 		})
 	}
 }
+
+func Test_binary(t *testing.T) {
+	tests := []struct {
+		thisDate Date
+		want     string
+	}{
+		{NewDate(2022, 10, 10), "2022-10-10"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.thisDate.String(), func(t *testing.T) {
+			receivedDate := format[string](tt.thisDate)
+			if receivedDate != tt.want {
+				t.Errorf("format() = %v, want %v", receivedDate, tt.want)
+			}
+		})
+	}
+}
