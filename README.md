@@ -6,4 +6,19 @@
 
 # bublyk
 
-An implementation of `Date` type that has some benefits in compersion to `time.Time` type.
+The type is targeted to the cases when we do not need to work with time yet only with date in UTC location.
+An implementation of `Date` type that has some benefits in compersion to `time.Time` type as `Date` consumes
+much less memory, does not requiere bolierplate code to work with date and comparison-enabled using operators `>`, `<`,
+etc.
+
+As bonus, it has support of `pgx` package what means you can directly scan into `Date` type as well as to use
+`Date` as argumnet in queries:
+
+```go
+inputDate := bublyk.Now()
+var returnedDate bublyk.Date
+err := pool.QueryRow(ctx, "INSERT INTO test(test_date) VALUES($1) RETURNING test_date", inputDate).Scan(&returnedDate)
+if err != nil {
+    ...
+}
+```
