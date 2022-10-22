@@ -18,7 +18,5 @@ As bonus, it has support of `pgx` package what means you can directly scan into 
 inputDate := bublyk.Now()
 var returnedDate bublyk.Date
 err := pool.QueryRow(ctx, "INSERT INTO test(test_date) VALUES($1) RETURNING test_date", inputDate).Scan(&returnedDate)
-if err != nil {
-    ...
-}
+if err != nil {...}
 ```

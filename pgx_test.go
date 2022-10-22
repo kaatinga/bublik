@@ -2,15 +2,19 @@ package bublyk
 
 import (
 	"context"
-	tests "github.com/kaatinga/postgreSQLtesthelper"
 	"testing"
+
+	tests "github.com/kaatinga/postgreSQLtesthelper"
+	"github.com/testcontainers/testcontainers-go"
 )
 
 func TestDate_WithBD(t *testing.T) {
 	ctx := context.Background()
 	dbContainer, pool := tests.SetupPostgreDatabase("kaatinga", "12345", t)
 	defer pool.Close()
-	defer dbContainer.Terminate(ctx)
+	defer func(dbContainer testcontainers.Container, ctx context.Context) {
+		_ = dbContainer.Terminate(ctx)
+	}(dbContainer, ctx)
 
 	_, err := pool.Exec(ctx, `
 CREATE TABLE IF NOT EXISTS tmp1 (
@@ -74,5 +78,4 @@ INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate IS NULL;
 	if err != nil {
 		t.Error("Test table deletion failed:", err)
 	}
-
 }

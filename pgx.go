@@ -4,9 +4,9 @@ import (
 	"database/sql/driver"
 	"encoding/binary"
 	"fmt"
-	"github.com/jackc/pgio"
 	"time"
 
+	"github.com/jackc/pgio"
 	"github.com/jackc/pgtype"
 )
 

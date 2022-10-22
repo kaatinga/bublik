@@ -77,13 +77,13 @@ linters:
     - errcheck
     - exportloopref
     - funlen
-#    - gochecknoinits
+    #    - gochecknoinits
     - goconst
-#    - gocritic
+    #    - gocritic
     - gocyclo
     - gofmt
     - goimports
-#    - gomnd
+    #    - gomnd
     - goprintffuncname
     - gosec
     - gosimple
@@ -95,7 +95,7 @@ linters:
     - noctx
     - nolintlint
     - staticcheck
-#    - structcheck
+    #    - structcheck
     - stylecheck
     - typecheck
     - unconvert
