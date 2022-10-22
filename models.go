@@ -91,9 +91,7 @@ func (thisDate Date) String() string {
 
 // format prepares a binary or text of the date in PostgreSQL format.
 func format[V []byte | string](thisDate Date) V {
-	var month = faststrconv.Byte2Bytes(thisDate.Month())
-	var day = faststrconv.Byte2Bytes(thisDate.Day())
-	var year = faststrconv.Uint162Bytes(thisDate.Year())
+	month, day, year := getDateAsBinaries(thisDate)
 	var output = make([]byte, 10)
 	output[0] = year[0]
 	output[1] = year[1]
@@ -122,22 +120,44 @@ func format[V []byte | string](thisDate Date) V {
 	return V(output)
 }
 
+func getDateAsBinaries(thisDate Date) ([]byte, []byte, []byte) {
+	var month = faststrconv.Byte2Bytes(thisDate.Month())
+	var day = faststrconv.Byte2Bytes(thisDate.Day())
+	var year = faststrconv.Uint162Bytes(thisDate.Year())
+	return month, day, year
+}
+
 // DMYWithDots returns date as string in the DD.MM.YYYY format.
 func (thisDate Date) DMYWithDots() string {
-	var month = faststrconv.Byte2String(thisDate.Month())
-	var day = faststrconv.Byte2String(thisDate.Day())
+	month, day, year := getDateAsBinaries(thisDate)
+	var output = make([]byte, 10)
 
-	// right format for month < 10
-	if len(month) == 1 {
-		month = "0" + month
+	switch len(day) {
+	case 2:
+		output[0] = day[0]
+		output[1] = day[1]
+	default:
+		output[0] = 48
+		output[1] = day[0]
 	}
+	output[2] = '.'
 
-	// right format for day < 10
-	if len(day) == 1 {
-		day = "0" + day
+	switch len(month) {
+	case 2:
+		output[3] = month[0]
+		output[4] = month[1]
+	default:
+		output[3] = 48
+		output[4] = month[0]
 	}
+	output[5] = '.'
 
-	return day + "." + month + "." + faststrconv.Uint162String(thisDate.Year())
+	output[6] = year[0]
+	output[7] = year[1]
+	output[8] = year[2]
+	output[9] = year[3]
+
+	return string(output)
 }
 
 func (thisDate Date) Format(layout string) string {
