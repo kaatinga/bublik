@@ -91,7 +91,7 @@ INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate IS NULL;
 			t.Error("INSERT query failed:", err)
 		}
 		if !isNull {
-			t.Error("the value miust be null but it is not")
+			t.Error("the value must be null but it is not")
 		}
 	})
 
