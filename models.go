@@ -67,21 +67,57 @@ func (thisDate Date) MonthBefore(date Date) bool {
 	return thisDate.Year() < date.Year()
 }
 
+// Deprecated: oldString returns date as string in the default PostgreSQL date format, YYYY-MM-DD.
+// func (thisDate Date) oldString() string {
+//	var month = faststrconv.Byte2String(thisDate.Month())
+//	var day = faststrconv.Byte2String(thisDate.Day())
+//
+//	// right format for month < 10
+//	if len(month) == 1 {
+//		month = "0" + month
+//	}
+//
+//	// right format for day < 10
+//	if len(day) == 1 {
+//		day = "0" + day
+//	}
+//	return faststrconv.Uint162String(thisDate.Year()) + "-" + month + "-" + day
+// }
+
 // String returns date as string in the default PostgreSQL date format, YYYY-MM-DD.
 func (thisDate Date) String() string {
-	var month = faststrconv.Byte2String(thisDate.Month())
-	var day = faststrconv.Byte2String(thisDate.Day())
+	return format[string](thisDate)
+}
 
-	// right format for month < 10
-	if len(month) == 1 {
-		month = "0" + month
-	}
+// format prepares a binary or text of the date in PostgreSQL format.
+func format[V []byte | string](thisDate Date) V {
+	var month = faststrconv.Byte2Bytes(thisDate.Month())
+	var day = faststrconv.Byte2Bytes(thisDate.Day())
+	var year = faststrconv.Uint162Bytes(thisDate.Year())
+	var output = make([]byte, 10)
+	output[0] = year[0]
+	output[1] = year[1]
+	output[2] = year[2]
+	output[3] = year[3]
+	output[4] = '-'
 
-	// right format for day < 10
-	if len(day) == 1 {
-		day = "0" + day
+	switch len(month) {
+	case 2:
+		output[5] = month[0]
+		output[6] = month[1]
+	default:
+		output[6] = month[0]
 	}
-	return faststrconv.Uint162String(thisDate.Year()) + "-" + month + "-" + day
+	output[7] = '-'
+
+	switch len(day) {
+	case 2:
+		output[8] = day[0]
+		output[9] = day[1]
+	default:
+		output[9] = day[0]
+	}
+	return V(output)
 }
 
 // DMYWithDots returns date as string in the DD.MM.YYYY format.
