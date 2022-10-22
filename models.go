@@ -13,6 +13,7 @@ const (
 
 	maximumDate Date = 0b1111111110011111 // 2127-12-31
 	minimumDate Date = 0b0000000000100001 // 2000-01-01
+	noDate      Date = 0
 
 	PostgreSQLFormat = "2006-01-02"
 )

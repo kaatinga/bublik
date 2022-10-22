@@ -13,7 +13,7 @@ import (
 // Value implements the database/sql/driver Valuer interface.
 func (thisDate Date) Value() (driver.Value, error) {
 	switch thisDate {
-	case 0:
+	case noDate:
 		return thisDate.String(), nil
 	default:
 		return nil, nil
@@ -22,7 +22,7 @@ func (thisDate Date) Value() (driver.Value, error) {
 
 func (thisDate *Date) DecodeText(_ *pgtype.ConnInfo, src []byte) error {
 	if src == nil {
-		*thisDate = 0
+		*thisDate = noDate
 		return nil
 	}
 
@@ -50,7 +50,7 @@ const (
 
 func (thisDate *Date) DecodeBinary(_ *pgtype.ConnInfo, src []byte) error {
 	if src == nil {
-		*thisDate = 0
+		*thisDate = noDate
 		return nil
 	}
 
@@ -74,7 +74,7 @@ func (thisDate *Date) DecodeBinary(_ *pgtype.ConnInfo, src []byte) error {
 }
 
 func (thisDate Date) EncodeText(_ *pgtype.ConnInfo, buf []byte) ([]byte, error) {
-	if thisDate == 0 {
+	if !thisDate.IsSet() {
 		return nil, nil
 	}
 
@@ -82,7 +82,7 @@ func (thisDate Date) EncodeText(_ *pgtype.ConnInfo, buf []byte) ([]byte, error) 
 }
 
 func (thisDate Date) EncodeBinary(_ *pgtype.ConnInfo, buf []byte) ([]byte, error) {
-	if thisDate == 0 {
+	if !thisDate.IsSet() {
 		return nil, nil
 	}
 
