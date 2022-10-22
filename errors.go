@@ -1,5 +1,5 @@
 package bublyk
 
-import const_errs "github.com/kaatinga/const-errs"
+import consterrs "github.com/kaatinga/const-errs"
 
-const ErrUnrecognizedFormat const_errs.Error = "unknown date format"
+const ErrUnrecognizedFormat consterrs.Error = "unknown date format"
