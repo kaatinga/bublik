@@ -2,24 +2,17 @@ package bublyk
 
 import (
 	"context"
-	"fmt"
-	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
-	"log"
-	"net"
+	tests "github.com/kaatinga/postgreSQLtesthelper"
 	"testing"
-	"time"
 )
 
 func TestDate_WithBD(t *testing.T) {
-	pool, err := NewDBConnection()
-	if err != nil {
-		t.Error(err)
-	}
-	defer pool.Close()
-
 	ctx := context.Background()
-	_, err = pool.Exec(ctx, `
+	dbContainer, pool := tests.SetupPostgreDatabase("kaatinga", "12345", t)
+	defer pool.Close()
+	defer dbContainer.Terminate(ctx)
+
+	_, err := pool.Exec(ctx, `
 CREATE TABLE IF NOT EXISTS tmp1 (
 	testDate date
 ); `)
@@ -82,61 +75,4 @@ INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate IS NULL;
 		t.Error("Test table deletion failed:", err)
 	}
 
-}
-
-func NewDBConnection() (*pgxpool.Pool, error) {
-	var ConnPool *pgxpool.Pool
-	initCtx := context.Background()
-
-	dbConnectionConfig, err := pgxpool.ParseConfig("postgres://*:*@localhost:5432/postgres")
-	if err != nil {
-		return nil, err
-	}
-
-	dbConnectionConfig.AfterRelease = func(*pgx.Conn) bool {
-		log.Println("db connection released")
-		return true
-	}
-
-	dbConnectionConfig.MaxConns = 8
-	dbConnectionConfig.MinConns = dbConnectionConfig.MaxConns >> 1
-
-	dbConnectionConfig.HealthCheckPeriod = time.Minute
-
-	dbConnectionConfig.MaxConnLifetime = time.Hour
-
-	dbConnectionConfig.MaxConnIdleTime = time.Hour
-
-	dbConnectionConfig.ConnConfig.ConnectTimeout = 1 * time.Second
-
-	dbConnectionConfig.ConnConfig.DialFunc = (&net.Dialer{
-		KeepAlive: dbConnectionConfig.HealthCheckPeriod,
-		Timeout:   dbConnectionConfig.ConnConfig.ConnectTimeout,
-	}).DialContext
-
-	var conn *pgx.Conn
-	ctx := context.Background()
-	conn, err = pgx.ConnectConfig(ctx, dbConnectionConfig.ConnConfig)
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close(ctx)
-
-	var maxConnInDB int32
-	err = conn.
-		QueryRow(initCtx, "SELECT CAST(setting AS integer) FROM pg_settings WHERE name='max_connections';").
-		Scan(&maxConnInDB)
-	if err != nil {
-		return nil, err
-	}
-	if dbConnectionConfig.MaxConns > maxConnInDB {
-		return nil, fmt.Errorf("incorrect connection pool size %d is set in db", maxConnInDB)
-	}
-
-	ConnPool, err = pgxpool.ConnectConfig(initCtx, dbConnectionConfig)
-	if err != nil {
-		return nil, err
-	}
-
-	return ConnPool, ConnPool.Ping(initCtx)
 }
