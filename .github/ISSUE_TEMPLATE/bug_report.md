@@ -13,7 +13,7 @@ A clear and concise description of what the bug is.
 **To Reproduce**
 Steps to reproduce the behavior:
 
-1. Go to '*_test.go'
+1. Go to a '*_test.go' file or create a new one.
 2. Add a test case
 3. Reproduce an error
 4. Create a pull request with the name 'new test case: ...'
