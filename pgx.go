@@ -78,7 +78,7 @@ func (thisDate Date) EncodeText(_ *pgtype.ConnInfo, buf []byte) ([]byte, error) 
 		return nil, nil
 	}
 
-	return append(buf, thisDate.String()...), nil
+	return append(buf, format[[]byte](thisDate)...), nil
 }
 
 func (thisDate Date) EncodeBinary(_ *pgtype.ConnInfo, buf []byte) ([]byte, error) {
