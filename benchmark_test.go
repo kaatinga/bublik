@@ -2,6 +2,22 @@ package bublyk
 
 import "testing"
 
+func BenchmarkNewString(b *testing.B) {
+	b.ReportAllocs()
+	date := Now()
+	for i := 0; i < b.N; i++ {
+		date.String()
+	}
+}
+
+func BenchmarkOldString(b *testing.B) {
+	b.ReportAllocs()
+	date := Now()
+	for i := 0; i < b.N; i++ {
+		date.oldString()
+	}
+}
+
 func BenchmarkWithAssets(b *testing.B) {
 	b.ReportAllocs()
 
