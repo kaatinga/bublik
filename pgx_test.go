@@ -80,24 +80,6 @@ INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate;
 		}
 	})
 
-	t.Run("test date 4", func(t *testing.T) {
-		inputDate := NewDate(2000, 1, 1)
-		var returnedDate Date
-		err = pool.QueryRow(ctx, `
-INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate;
-`, inputDate).Scan(&returnedDate)
-		if err != nil {
-			t.Error("INSERT query failed:", err)
-		}
-		if returnedDate == inputDate {
-			t.Log("success!")
-			t.Logf("returned inputDate: '%s'", returnedDate)
-			t.Logf("input inputDate: '%s'", inputDate)
-		} else {
-			t.Errorf("dates are not equal, have '%s', want '%s'", returnedDate, inputDate)
-		}
-	})
-
 	t.Run("test null date", func(t *testing.T) {
 		var inputDate Date = 0
 		var isNull bool
