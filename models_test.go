@@ -248,3 +248,19 @@ func Test_binary(t *testing.T) {
 		})
 	}
 }
+
+func TestCurrentMonth(t *testing.T) {
+	tests := []struct {
+		name string
+	}{
+		{"now1"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := CurrentMonth()
+			if got.Day() != 1 {
+				t.Errorf("CurrentMonth() returned incorrect day = %v", got.Day())
+			}
+		})
+	}
+}
