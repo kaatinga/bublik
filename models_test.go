@@ -264,3 +264,20 @@ func TestCurrentMonth(t *testing.T) {
 		})
 	}
 }
+
+func TestDate_DMYWithDots(t *testing.T) {
+	tests := []struct {
+		thisDate Date
+		want     string
+	}{
+		{NewDate(2000, 1, 1), "01.01.2000"},
+		{NewDate(2022, 11, 11), "11.11.2022"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.want, func(t *testing.T) {
+			if got := tt.thisDate.DMYWithDots(); got != tt.want {
+				t.Errorf("DMYWithDots() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
