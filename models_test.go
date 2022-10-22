@@ -237,6 +237,7 @@ func Test_binary(t *testing.T) {
 		want     string
 	}{
 		{NewDate(2022, 10, 10), "2022-10-10"},
+		{NewDate(2000, 1, 1), "2000-01-01"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.thisDate.String(), func(t *testing.T) {

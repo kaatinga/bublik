@@ -106,6 +106,7 @@ func format[V []byte | string](thisDate Date) V {
 		output[5] = month[0]
 		output[6] = month[1]
 	default:
+		output[5] = 48
 		output[6] = month[0]
 	}
 	output[7] = '-'
@@ -115,6 +116,7 @@ func format[V []byte | string](thisDate Date) V {
 		output[8] = day[0]
 		output[9] = day[1]
 	default:
+		output[8] = 48
 		output[9] = day[0]
 	}
 	return V(output)
