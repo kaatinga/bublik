@@ -3,7 +3,7 @@ module github.com/kaatinga/bublyk
 go 1.18
 
 require (
-	github.com/jackc/pgtype v1.12.0
+	github.com/jackc/pgtype v1.13.0
 	github.com/kaatinga/const-errs v1.0.0
 	github.com/kaatinga/postgreSQLtesthelper v0.0.0-20221022075228-f24420f577af
 	github.com/kaatinga/strconv v1.2.1
