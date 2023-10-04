@@ -6,12 +6,12 @@
 
 # bublyk
 
-The package implements type `Date` that is targeted to the cases when we do not need to work with time yet only with date
-in UTC location. `Date` type has some benefits in compression to `time.Time` type as `Date` consumes much less memory, does not
-require boilerplate code to work with date, also it is comparison-enabled using operators `>`, `<`, etc.
+The package introduces the Date type, specifically designed for instances where only the date in UTC location is required, without the need for time details. In comparison to the time.Time type, Date offers several advantages:
+- It consumes significantly less memory.
+- It eliminates the need for boilerplate code when working with dates.
+- It allows for straightforward comparisons using operators such as >, <, and others.
 
-As bonus, it supports `pgx` package natively what means you can directly scan into `Date` type as well as to use
-`Date` as argument in queries.
+Additionally, it natively supports the pgx package. This means you can directly scan into the Date type and use Date as an argument in queries.
 
 ## Usage
 
