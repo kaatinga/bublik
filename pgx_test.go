@@ -1,24 +1,27 @@
-//go:build linux || localtests
+//go:build localtests
 
 package bublyk
 
 import (
-	"context"
 	"testing"
+	"time"
 
-	tests "github.com/kaatinga/postgreSQLtesthelper"
-	"github.com/testcontainers/testcontainers-go"
+	"github.com/kaatinga/bochka"
 )
 
 func TestDate_WithBD(t *testing.T) {
-	ctx := context.Background()
-	dbContainer, pool := tests.SetupPostgreDatabase("kaatinga", "12345", t)
-	defer pool.Close()
-	defer func(dbContainer testcontainers.Container, ctx context.Context) {
-		_ = dbContainer.Terminate(ctx)
-	}(dbContainer, ctx)
+	helper := bochka.NewPostgreTestHelper(t, bochka.WithTimeout(10*time.Second))
+	helper.Run("14.5")
 
-	_, err := pool.Exec(ctx, `
+	t.Cleanup(func() {
+		_, err := helper.Exec(helper.Context, `DROP TABLE IF EXISTS tmp1`)
+		if err != nil {
+			t.Error("Test table deletion failed:", err)
+		}
+		helper.Close()
+	})
+
+	_, err := helper.Exec(helper.Context, `
 CREATE TABLE IF NOT EXISTS tmp1 (
 	testDate date
 ); `)
@@ -29,7 +32,7 @@ CREATE TABLE IF NOT EXISTS tmp1 (
 	t.Run("test date 1", func(t *testing.T) {
 		inputDate := Now()
 		var returnedDate Date
-		err = pool.QueryRow(ctx, `
+		err = helper.QueryRow(helper.Context, `
 INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate;
 `, inputDate).Scan(&returnedDate)
 		if err != nil {
@@ -47,7 +50,7 @@ INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate;
 	t.Run("test date 2", func(t *testing.T) {
 		inputDate := NewDate(2022, 12, 31)
 		var returnedDate Date
-		err = pool.QueryRow(ctx, `
+		err = helper.QueryRow(helper.Context, `
 INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate;
 `, inputDate).Scan(&returnedDate)
 		if err != nil {
@@ -65,7 +68,7 @@ INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate;
 	t.Run("test date 3", func(t *testing.T) {
 		inputDate := NewDate(2000, 1, 1)
 		var returnedDate Date
-		err = pool.QueryRow(ctx, `
+		err = helper.QueryRow(helper.Context, `
 INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate;
 `, inputDate).Scan(&returnedDate)
 		if err != nil {
@@ -83,7 +86,7 @@ INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate;
 	t.Run("test null date", func(t *testing.T) {
 		var inputDate Date = 0
 		var isNull bool
-		err = pool.QueryRow(ctx, `
+		err = helper.QueryRow(helper.Context, `
 INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate IS NULL;
 `, inputDate).Scan(&isNull)
 		if err != nil {
@@ -93,9 +96,4 @@ INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate IS NULL;
 			t.Error("the value must be null but it is not")
 		}
 	})
-
-	_, err = pool.Exec(ctx, `DROP TABLE tmp1`)
-	if err != nil {
-		t.Error("Test table deletion failed:", err)
-	}
 }
