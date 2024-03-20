@@ -50,3 +50,4 @@ func main() {
 ```
 
 Will be happy to everyone who want to participate in the work on the `bublyk` package.
+[![Tests](https://github.com/kaatinga/luna/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/kaatinga/luna/actions/workflows/test.yml)
