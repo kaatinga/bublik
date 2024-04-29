@@ -11,34 +11,34 @@ import (
 )
 
 func TestBublykSuite(t *testing.T) {
-	suite.Run(t, new(BublykTestsSuite))
+	suite.Run(t, new(TestsSuite))
 }
 
-type BublykTestsSuite struct {
+type TestsSuite struct {
 	suite.Suite
 
-	helper *bochka.PostgreTestHelper
+	db *bochka.PostgreTestHelper
 }
 
-func (suite *BublykTestsSuite) SetupSuite() {
-	suite.helper = bochka.NewPostgreTestHelper(suite.T(), bochka.WithTimeout(10*time.Second))
-	suite.helper.Run("14.5")
+func (suite *TestsSuite) SetupSuite() {
+	suite.db = bochka.NewPostgreTestHelper(suite.T(), bochka.WithTimeout(10*time.Second))
+	suite.db.Run("16")
 }
 
-func (suite *BublykTestsSuite) TearDownSuite() {
-	suite.helper.Close()
+func (suite *TestsSuite) TearDownSuite() {
+	suite.db.Close()
 }
 
-func (suite *BublykTestsSuite) TestDate_WithBD() {
+func (suite *TestsSuite) TestDate_WithBD() {
 	t := suite.T()
 	t.Cleanup(func() {
-		_, err := suite.helper.Pool.Exec(suite.helper.Context, `DROP TABLE IF EXISTS tmp1`)
+		_, err := suite.db.Pool.Exec(suite.db.Context, `DROP TABLE IF EXISTS tmp1`)
 		if err != nil {
 			t.Error("Test table deletion failed:", err)
 		}
 	})
 
-	_, err := suite.helper.Pool.Exec(suite.helper.Context, `
+	_, err := suite.db.Pool.Exec(suite.db.Context, `
 CREATE TABLE IF NOT EXISTS tmp1 (
 	testDate date
 ); `)
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS tmp1 (
 	t.Run("test date 1", func(t *testing.T) {
 		inputDate := Now()
 		var returnedDate Date
-		err = suite.helper.Pool.QueryRow(suite.helper.Context, `
+		err = suite.db.Pool.QueryRow(suite.db.Context, `
 INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate;
 `, inputDate).Scan(&returnedDate)
 		if err != nil {
@@ -67,7 +67,7 @@ INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate;
 	t.Run("test date 2", func(t *testing.T) {
 		inputDate := NewDate(2022, 12, 31)
 		var returnedDate Date
-		err = suite.helper.Pool.QueryRow(suite.helper.Context, `
+		err = suite.db.Pool.QueryRow(suite.db.Context, `
 INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate;
 `, inputDate).Scan(&returnedDate)
 		if err != nil {
@@ -85,7 +85,7 @@ INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate;
 	t.Run("test date 3", func(t *testing.T) {
 		inputDate := NewDate(2000, 1, 1)
 		var returnedDate Date
-		err = suite.helper.Pool.QueryRow(suite.helper.Context, `
+		err = suite.db.Pool.QueryRow(suite.db.Context, `
 INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate;
 `, inputDate).Scan(&returnedDate)
 		if err != nil {
@@ -103,7 +103,7 @@ INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate;
 	t.Run("test null date", func(t *testing.T) {
 		var inputDate Date = 0
 		var isNull bool
-		err = suite.helper.Pool.QueryRow(suite.helper.Context, `
+		err = suite.db.Pool.QueryRow(suite.db.Context, `
 INSERT INTO tmp1(testdate) VALUES($1) RETURNING testdate IS NULL;
 `, inputDate).Scan(&isNull)
 		if err != nil {

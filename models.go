@@ -67,25 +67,11 @@ func (thisDate Date) MonthBefore(date Date) bool {
 	return thisDate.Year() < date.Year()
 }
 
-// Deprecated: oldString returns date as string in the default PostgreSQL date format, YYYY-MM-DD.
-// func (thisDate Date) oldString() string {
-//	var month = faststrconv.Byte2String(thisDate.Month())
-//	var day = faststrconv.Byte2String(thisDate.Day())
-//
-//	// right format for month < 10
-//	if len(month) == 1 {
-//		month = "0" + month
-//	}
-//
-//	// right format for day < 10
-//	if len(day) == 1 {
-//		day = "0" + day
-//	}
-//	return faststrconv.Uint162String(thisDate.Year()) + "-" + month + "-" + day
-// }
-
 // String returns date as string in the default PostgreSQL date format, YYYY-MM-DD.
 func (thisDate Date) String() string {
+	if !thisDate.IsSet() {
+		return "null"
+	}
 	return format[string](thisDate)
 }
 

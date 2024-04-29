@@ -8,16 +8,16 @@ import (
 
 func TestNewDate(t *testing.T) {
 	tests := []struct {
-		year  int
-		month int
-		day   int
+		year, month, day int
+		want             string
 	}{
-		{2021, 2, 2},
-		{2001, 2, 28},
-		{2021, 12, 15},
-		{2031, 1, 1},
-		{2127, 12, 31},
-		{2000, 1, 1},
+		{2021, 2, 28, "2021-02-28"},
+		{2001, 2, 28, "2001-02-28"},
+		{2021, 12, 31, "2021-12-31"},
+		{2021, 1, 1, "2021-01-01"},
+		{2000, 1, 1, "2000-01-01"},
+		{2127, 12, 31, "2127-12-31"},
+		{2031, 1, 1, "2031-01-01"},
 	}
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%04d-%02d-%02d", tt.year, tt.month, tt.day), func(t *testing.T) {
@@ -50,6 +50,10 @@ func TestNewDate(t *testing.T) {
 				t.Errorf("Day is incorrect.\nhave %v\nwant %v", date.Day(), tt.day)
 			}
 
+			if tt.want != date.String() {
+				t.Errorf("String() = %v, want %v", date.String(), tt.want)
+			}
+
 			t.Logf("%16b\n", date)
 			t.Log(date.String())
 		})
@@ -76,8 +80,7 @@ func TestDate_Format(t *testing.T) {
 
 func TestDate_NextDay(t *testing.T) {
 	testCases := []struct {
-		this Date
-		want Date
+		this, want Date
 	}{
 		{NewDate(2021, 12, 31), NewDate(2022, 1, 1)},
 		{NewDate(2021, 12, 1), NewDate(2021, 12, 2)},
@@ -100,6 +103,8 @@ func TestDate_PreviousDay(t *testing.T) {
 		{NewDate(2021, 12, 31), NewDate(2021, 12, 30)},
 		{NewDate(2021, 12, 2), NewDate(2021, 12, 1)},
 		{NewDate(2021, 3, 1), NewDate(2021, 2, 28)},
+		{NewDate(2021, 3, 2), NewDate(2021, 3, 1)},
+		{minimumDate, minimumDate},
 	}
 	for _, tt := range testCases {
 		t.Run(tt.this.String(), func(t *testing.T) {
@@ -112,14 +117,14 @@ func TestDate_PreviousDay(t *testing.T) {
 
 func TestDate_NextWeek(t *testing.T) {
 	tests := []struct {
-		this Date
-		want Date
+		this, want Date
 	}{
 		{NewDate(2021, 12, 31), NewDate(2022, 1, 7)},
 		{NewDate(2021, 12, 1), NewDate(2021, 12, 8)},
 		{NewDate(2021, 2, 28), NewDate(2021, 3, 7)},
 		{NewDate(2021, 2, 1), NewDate(2021, 2, 8)},
 		{NewDate(2127, 12, 31), maximumDate},
+		{maximumDate, maximumDate},
 	}
 	for _, tt := range tests {
 		t.Run(tt.this.String(), func(t *testing.T) {
@@ -132,8 +137,7 @@ func TestDate_NextWeek(t *testing.T) {
 
 func TestDate_PreviousWeek(t *testing.T) {
 	tests := []struct {
-		this Date
-		want Date
+		this, want Date
 	}{
 		{NewDate(2021, 12, 31), NewDate(2021, 12, 24)},
 		{NewDate(2022, 1, 3), NewDate(2021, 12, 27)},
@@ -141,6 +145,7 @@ func TestDate_PreviousWeek(t *testing.T) {
 		{NewDate(2021, 3, 2), NewDate(2021, 2, 23)},
 		{NewDate(2021, 3, 9), NewDate(2021, 3, 2)},
 		{NewDate(2000, 1, 1), minimumDate},
+		{minimumDate, minimumDate},
 	}
 	for _, tt := range tests {
 		t.Run(tt.this.String(), func(t *testing.T) {
@@ -153,8 +158,7 @@ func TestDate_PreviousWeek(t *testing.T) {
 
 func TestDate_NextMonth(t *testing.T) {
 	tests := []struct {
-		date Date
-		want Date
+		date, want Date
 	}{
 		{NewDate(2021, 12, 31), NewDate(2022, 1, 31)},
 		{NewDate(2024, 2, 29), NewDate(2024, 3, 29)},
@@ -162,6 +166,7 @@ func TestDate_NextMonth(t *testing.T) {
 		{NewDate(2021, 12, 1), NewDate(2022, 1, 1)},
 		{NewDate(2021, 3, 2), NewDate(2021, 4, 2)},
 		{NewDate(2023, 1, 1), NewDate(2023, 2, 1)},
+		{maximumDate, maximumDate},
 	}
 	for _, tt := range tests {
 		t.Run(tt.date.String(), func(t *testing.T) {
@@ -277,6 +282,23 @@ func TestDate_DMYWithDots(t *testing.T) {
 		t.Run(tt.want, func(t *testing.T) {
 			if got := tt.thisDate.DMYWithDots(); got != tt.want {
 				t.Errorf("DMYWithDots() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDate_String(t *testing.T) {
+	tests := []struct {
+		thisDate Date
+		want     string
+	}{
+		{0, "null"},
+		{NewDate(2022, 10, 10), "2022-10-10"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.thisDate.String(), func(t *testing.T) {
+			if got := tt.thisDate.String(); got != tt.want {
+				t.Errorf("String() = %v, want %v", got, tt.want)
 			}
 		})
 	}
