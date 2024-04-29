@@ -58,6 +58,18 @@ func TestNewDate(t *testing.T) {
 			t.Log(date.String())
 		})
 	}
+
+	// Test for the maximum date.
+	d := NewDate(2227, 12, 31)
+	if maximumDate != d {
+		t.Errorf("maximumDate = %v, want %v", d, maximumDate)
+	}
+
+	// Test for the minimum date.
+	d = NewDate(2000, 1, 1)
+	if minimumDate != d {
+		t.Errorf("minimumDate = %v, want %v", d, minimumDate)
+	}
 }
 
 func TestDate_Format(t *testing.T) {
