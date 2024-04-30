@@ -66,7 +66,7 @@ func TestNewDate(t *testing.T) {
 	}
 
 	// Test for the minimum date.
-	d = NewDate(2000, 1, 1)
+	d = NewDate(1999, 1, 1)
 	if minimumDate != d {
 		t.Errorf("minimumDate = %v, want %v", d, minimumDate)
 	}

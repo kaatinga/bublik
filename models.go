@@ -241,7 +241,7 @@ func (thisDate Date) PreviousMonth() Date {
 		return NewDateFromTime(&timeDate)
 	}
 	if (thisDate&monthMask)>>5 == 1 {
-		if thisDate&yearMask == 0 { // we reached the minimum
+		if thisDate&yearMask == noDate { // we reached the minimum
 			return minimumDate
 		}
 		return thisDate&^monthMask&^yearMask | ((12 << 5) | (thisDate&yearMask>>9-1)<<9) // December
