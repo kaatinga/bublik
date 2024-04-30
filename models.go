@@ -1,9 +1,9 @@
 package bublyk
 
-//nolint: goimports // unknown problem
 import (
-	"github.com/kaatinga/strconv"
 	"time"
+
+	faststrconv "github.com/kaatinga/strconv"
 )
 
 const (
@@ -224,8 +224,8 @@ func (thisDate Date) NextMonth() Date {
 		return NewDateFromTime(&timeDate)
 	}
 
-	if (thisDate&monthMask)>>5 == 12 {
-		if thisDate&yearMask == 127 { // we reached the maximum year
+	if thisDate&monthMask>>5 == 12 {
+		if thisDate&yearMask>>9 == 127 { // we reached the maximum year
 			return maximumDate
 		}
 		return thisDate&^monthMask&^yearMask | ((1 << 5) | (thisDate&yearMask>>9+1)<<9) // January

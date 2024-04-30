@@ -178,6 +178,7 @@ func TestDate_NextMonth(t *testing.T) {
 		{NewDate(2021, 12, 1), NewDate(2022, 1, 1)},
 		{NewDate(2021, 3, 2), NewDate(2021, 4, 2)},
 		{NewDate(2023, 1, 1), NewDate(2023, 2, 1)},
+		{NewDate(2127, 12, 1), maximumDate},
 		{maximumDate, maximumDate},
 	}
 	for _, tt := range tests {
@@ -199,6 +200,7 @@ func TestDate_PreviousMonth(t *testing.T) {
 		{NewDate(2021, 12, 1), NewDate(2021, 11, 1)},
 		{NewDate(2021, 3, 2), NewDate(2021, 2, 2)},
 		{NewDate(2024, 1, 1), NewDate(2023, 12, 1)},
+		{NewDate(1999, 1, 1), minimumDate},
 	}
 	for _, tt := range tests {
 		t.Run(tt.this.String(), func(t *testing.T) {
