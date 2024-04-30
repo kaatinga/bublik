@@ -121,7 +121,7 @@ func TestDate_PreviousDay(t *testing.T) {
 	for _, tt := range testCases {
 		t.Run(tt.this.String(), func(t *testing.T) {
 			if got := tt.this.PreviousDay(); got != tt.want {
-				t.Errorf("NextDay() = %v, want %v", got, tt.want)
+				t.Errorf("PreviousDay() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -141,7 +141,7 @@ func TestDate_NextWeek(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.this.String(), func(t *testing.T) {
 			if got := tt.this.NextWeek(); got != tt.want {
-				t.Errorf("NextDay() = %v, want %v", got, tt.want)
+				t.Errorf("NextWeek() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -162,7 +162,7 @@ func TestDate_PreviousWeek(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.this.String(), func(t *testing.T) {
 			if got := tt.this.PreviousWeek(); got != tt.want {
-				t.Errorf("NextDay() = %v, want %v", got, tt.want)
+				t.Errorf("PreviousWeek() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -203,7 +203,7 @@ func TestDate_PreviousMonth(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.this.String(), func(t *testing.T) {
 			if got := tt.this.PreviousMonth(); got != tt.want {
-				t.Errorf("NextDay() = %v, want %v", got, tt.want)
+				t.Errorf("PreviousMonth() = %v, want %v", got, tt.want)
 			}
 		})
 	}
