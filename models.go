@@ -270,6 +270,9 @@ func makeTime(year uint16, month, day byte) *time.Time {
 
 // NewDateFromTime create new date using time.Time model.
 func NewDateFromTime(t *time.Time) Date {
+	if t == nil {
+		return noDate
+	}
 	year := t.Year()
 	if year < 2000 {
 		return minimumDate
