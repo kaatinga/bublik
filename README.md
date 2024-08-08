@@ -12,42 +12,36 @@ The package introduces the Date type, specifically designed for instances where 
 - It eliminates the need for boilerplate code when working with dates.
 - It allows for straightforward comparisons using operators such as >, <, and others.
 
-Additionally, it natively supports the pgx package. This means you can directly scan into the Date type and use Date as an argument in queries.
-
 ## Usage
 
 ```go
 package main
 
 import (
-    "context"
-    "fmt"
-    "github.com/kaatinga/bublyk"
-    "github.com/jackc/pgx/v4/pgxpool"
+	"fmt"
+	"time"
+
+	"github.com/kaatinga/bublyk"
 )
 
 func main() {
-    ctx := context.Background()
-    pool, err := pgxpool.Connect(ctx, "postgres://postgres:postgres@localhost:5432/postgres")
-    if err != nil {
-        panic(err)
-    }
-    defer pool.Close()
+	// Create a new Date instance
+	date := bublyk.Now()
 
-    _, err = pool.Exec(ctx, "CREATE TABLE IF NOT EXISTS test (test_date DATE)")
-    if err != nil {
-        panic(err)
-    }
+	// Print the current date
+	fmt.Println(date)
 
-    inputDate := bublyk.Now()
-    var returnedDate bublyk.Date
-    err = pool.QueryRow(ctx, "INSERT INTO test(test_date) VALUES($1) RETURNING test_date", inputDate).Scan(&returnedDate)
-    if err != nil {
-        panic(err)
-    }
+	// Create a new Date instance from a time.Time instance
+	var t = time.Now()
+	date2 := bublyk.NewDateFromTime(&t)
 
-    fmt.Println(inputDate, returnedDate)
+	// Print the current date
+	fmt.Println(date2)
+
+	// Compare two Date instances
+	fmt.Println(date > date2)
 }
+
 ```
 
 Will be happy to everyone who want to participate in the work on the `bublyk` package.
