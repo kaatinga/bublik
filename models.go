@@ -1,6 +1,7 @@
 package bublyk
 
 import (
+	"errors"
 	"time"
 
 	faststrconv "github.com/kaatinga/strconv"
@@ -157,7 +158,7 @@ func (thisDate Date) Format(layout string) string {
 
 func Parse(formattedDate string) (Date, error) {
 	if len([]rune(formattedDate)) != len([]rune(PostgreSQLFormat)) {
-		return 0, ErrUnrecognizedFormat
+		return 0, errors.New("incorrect date format")
 	}
 
 	year, err := faststrconv.GetUint16(formattedDate[0:4])
